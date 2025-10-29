@@ -1,128 +1,127 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Glovo Weekly Tracker</title>
+  <title>Glovo Tax Calculator</title>
   <style>
+    :root {
+      --glovo-yellow: #ffcc00;
+      --text-dark: #333;
+      --bg-light: #f8f9fa;
+      --bg-dark: #1c1c1c;
+      --text-light: #f8f9fa;
+    }
+
     body {
       font-family: "Segoe UI", sans-serif;
-      background-color: #f9f9f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       margin: 0;
-      padding: 10px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 20px;
-      max-width: 400px;
-      width: 100%;
-    }
-    h2 {
-      text-align: center;
-      color: #ffcc00;
-      margin-bottom: 10px;
-    }
-    .day-input {
+      padding: 0;
+      height: 100vh;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      justify-content: center;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
     }
-    .day-input input {
-      width: 60%;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+
+    /* Glovo logo background (faint delivery bag) */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle at center, rgba(255, 204, 0, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-10deg);
+      z-index: 0;
     }
-    button {
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 25px;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    h2 {
+      color: var(--glovo-yellow);
+      margin-bottom: 15px;
+    }
+
+    input {
       width: 100%;
       padding: 10px;
-      background: #ffcc00;
-      border: none;
+      margin: 8px 0;
+      border: 1px solid #ccc;
       border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover { background: #ffb800; }
-    .result {
+      font-size: 16px;
       text-align: center;
+      background: transparent;
+      color: inherit;
+    }
+
+    .result {
       margin-top: 15px;
       font-weight: 600;
+      font-size: 17px;
     }
-    .totals {
-      margin-top: 12px;
-      background: #fffbea;
-      padding: 10px;
-      border-radius: 8px;
+
+    .theme-toggle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--glovo-yellow);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      color: white;
+      font-size: 18px;
+      transition: background 0.3s;
+    }
+    .theme-toggle:hover { background: #ffb800; }
+
+    body.dark {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+    }
+    body.dark .card {
+      background-color: #2a2a2a;
+      color: var(--text-light);
     }
   </style>
 </head>
 <body>
+  <button class="theme-toggle" id="themeBtn">🌙</button>
+
   <div class="card">
-    <h2>Glovo Weekly Tracker</h2>
-    <div id="inputs"></div>
-    <button onclick="addDay()">+ Add Day</button>
-    <div class="totals" id="totals"></div>
+    <h2>Glovo Tax Calculator</h2>
+    <input type="number" id="earnings" placeholder="Enter earnings (₦)" />
+    <div class="result" id="result"></div>
   </div>
 
   <script>
-    const taxRate = 0.02;
+    const earningsInput = document.getElementById("earnings");
+    const resultDiv = document.getElementById("result");
+    const themeBtn = document.getElementById("themeBtn");
+    const body = document.body;
+
     const platformFee = 500;
     const adminFee = 500;
-    let dayCount = 0;
-
-    const inputsDiv = document.getElementById("inputs");
-    const totalsDiv = document.getElementById("totals");
-
-    function addDay() {
-      dayCount++;
-      const div = document.createElement("div");
-      div.className = "day-input";
-      div.innerHTML = `
-        <label>Day ${dayCount}:</label>
-        <input type="number" placeholder="₦ amount" oninput="calculate()" id="day${dayCount}">
-      `;
-      inputsDiv.appendChild(div);
-      calculate();
-    }
+    const taxRate = 0.02;
 
     function calculate() {
-      let totalEarnings = 0;
-      let totalTax = 0;
-      let totalDeductions = 0;
-      let totalNet = 0;
-
-      for (let i = 1; i <= dayCount; i++) {
-        const val = parseFloat(document.getElementById(`day${i}`)?.value) || 0;
-        const tax = val * taxRate;
-        const deduction = tax + platformFee + adminFee;
-        const net = val - deduction;
-
-        totalEarnings += val;
-        totalTax += tax;
-        totalDeductions += (platformFee + adminFee);
-        totalNet += net;
-      }
-
-      totalsDiv.innerHTML = `
-        <p>Total Earnings: ₦${totalEarnings.toLocaleString()}</p>
-        <p>Total Tax (2%): ₦${totalTax.toFixed(2)}</p>
-        <p>Total Fees: ₦${totalDeductions}</p>
-        <hr/>
-        <h3>Weekly Net: ₦${totalNet.toLocaleString(undefined, {minimumFractionDigits: 2})}</h3>
-      `;
-    }
-
-    // Start with one day input
-    addDay();
-  </script>
-</body>
-</html>
+      const earnings = parse
