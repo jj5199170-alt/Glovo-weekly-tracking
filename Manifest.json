@@ -1,0 +1,21 @@
+{
+  "name": "Glovo Tax Calculator",
+  "short_name": "GlovoCalc",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffb800",
+  "theme_color": "#ffb800",
+  "description": "A simple Glovo earnings tax calculator for riders in Nigeria.",
+  "icons": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Glovo_logo.svg",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Glovo_logo.svg",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
