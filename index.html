@@ -24,17 +24,35 @@
       height: 100vh;
       margin: 0;
       transition: background 0.3s, color 0.3s;
-      background-image: radial-gradient(circle at 30% 30%, rgba(255, 184, 0, 0.08) 0%, transparent 40%),
-                        radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
-      background-size: cover;
-      background-repeat: no-repeat;
+      overflow: hidden;
     }
 
-    .dark {
-      background-color: var(--dark-bg);
-      color: var(--dark-text);
-      background-image: radial-gradient(circle at 30% 30%, rgba(255, 184, 0, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    /* Background animation */
+    @keyframes glovoGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      background: linear-gradient(120deg,
+        rgba(255,184,0,0.15),
+        rgba(0,0,0,0.05),
+        rgba(255,184,0,0.1));
+      background-size: 200% 200%;
+      animation: glovoGlow 10s ease infinite;
+    }
+
+    .dark::before {
+      background: linear-gradient(120deg,
+        rgba(255,184,0,0.15),
+        rgba(255,255,255,0.05),
+        rgba(255,184,0,0.1));
     }
 
     .card {
@@ -99,13 +117,20 @@
 
     .logo-bg {
       position: fixed;
-      bottom: 15px;
-      left: 15px;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 14px;
-      opacity: 0.3;
+      opacity: 0.25;
       color: var(--yellow);
       font-weight: bold;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      animation: glowPulse 3s infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      from { opacity: 0.2; text-shadow: 0 0 5px rgba(255,184,0,0.4); }
+      to { opacity: 0.5; text-shadow: 0 0 20px rgba(255,184,0,0.8); }
     }
   </style>
 </head>
@@ -128,16 +153,19 @@
         resultDiv.innerHTML = "Please enter a valid amount.";
         return;
       }
+
       const tax = 0.02 * earnings;
       const platformFee = 500;
       const adminFee = 500;
-      const totalDeductions = tax + platformFee + adminFee;
-      const netEarnings = earnings - totalDeductions;
+      const totalServiceCharge = tax + platformFee + adminFee;
+      const netEarnings = earnings - totalServiceCharge;
+
       resultDiv.innerHTML = `
         Tax (2%): ₦${tax.toFixed(2)}<br/>
         Platform Fee: ₦${platformFee}<br/>
         Admin Fee: ₦${adminFee}<br/>
         <hr/>
+        <strong>Total Service Charge: ₦${totalServiceCharge.toFixed(2)}</strong><br/>
         <strong>Net Earnings: ₦${netEarnings.toFixed(2)}</strong>
       `;
     }
