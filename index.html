@@ -162,36 +162,26 @@
   <div class="logo-bg">GLOVO ⚡</div>
 
   <script>
-    const input = document.getElementById("earnings");
-    const resultDiv = document.getElementById("result");
+   <script>
+  const input = document.getElementById("earnings");
+  const resultDiv = document.getElementById("result");
 
-    function calculate() {
-      const earnings = parseFloat(input.value);
-      if (isNaN(earnings) || earnings <= 0) {
-        resultDiv.innerHTML = "Please enter a valid amount.";
-        return;
-      }
+  function calculate() {
+    // your existing calculator code
+  }
 
-      const tax = 0.02 * earnings;
-      const platformFee = 500;
-      const adminFee = 500;
-      const totalServiceCharge = tax + platformFee + adminFee;
-      const netEarnings = earnings - totalServiceCharge;
+  input.addEventListener("input", calculate);
 
-      resultDiv.innerHTML = `
-        Tax (2%): ₦${tax.toFixed(2)}<br/>
-        Platform Fee: ₦${platformFee}<br/>
-        Admin Fee: ₦${adminFee}<br/>
-        <hr/>
-        <strong>Total Service Charge: ₦${totalServiceCharge.toFixed(2)}</strong><br/>
-        <strong>Net Earnings: ₦${netEarnings.toFixed(2)}</strong>
-      `;
-    }
+  function toggleTheme() {
+    document.body.classList.toggle("dark");
+  }
 
-    input.addEventListener("input", calculate);
-
-    function toggleTheme() {
-      document.body.classList.toggle("dark");
+  /* 👇🏾 Add this line below everything inside the script */
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js")
+      .then(() => console.log("Service Worker Registered"));
+  }
+</script> 
     }
   </script>
 </body>
